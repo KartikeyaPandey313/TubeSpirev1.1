@@ -290,8 +290,6 @@ def download():
 
 
 # --- Static Pages & SEO Files ---
-
-
 @app.route("/terms")
 def terms():
     return render_template("terms.html")
@@ -348,7 +346,6 @@ def internal_server_error(error):
 # ==============================================================================
 # 6. APPLICATION LAUNCH
 # ==============================================================================
-
 
 if __name__ == "__main__":
     app.logger.info("TubeSpire application starting...")
