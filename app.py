@@ -1,9 +1,10 @@
+# -*- coding: utf-8 -*-
 """
 TubeSpire - A professional YouTube video and audio downloader web application.
 
 This Flask application provides a clean, user-friendly interface for downloading
-YouTube content. It is built with a focus on clean code, robustness, and
-maintainability for a production environment.
+YouTube content in various resolutions and formats. It is built with a focus on
+clean code, robustness, and maintainability for a production environment.
 
 Author: TubeSpire Team
 Version: 1.0
@@ -34,10 +35,7 @@ from yt_dlp.utils import DownloadError
 
 
 class Config:
-    """
-    Configuration class for the Flask application.
-    Uses environment variables for sensitive data in production.
-    """
+    """Configuration class for the Flask application."""
 
     SECRET_KEY = os.environ.get(
         "SECRET_KEY", "a-very-secret-and-random-key-that-is-long-and-secure"
@@ -48,7 +46,7 @@ class Config:
 app = Flask(__name__)
 app.config.from_object(Config)
 
-# Setup professional logging to help debug issues in a production environment
+# Setup professional logging
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
@@ -66,10 +64,7 @@ except OSError as e:
 
 @app.after_request
 def apply_security_headers(response: Response) -> Response:
-    """
-    Applies a set of robust security headers to every response.
-    This helps to protect the application from common web vulnerabilities.
-    """
+    """Applies a set of robust security headers to every response."""
     response.headers["X-Frame-Options"] = "SAMEORIGIN"
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
@@ -97,17 +92,14 @@ def apply_security_headers(response: Response) -> Response:
 def fetch_video_info(url: str) -> Optional[Dict[str, Any]]:
     """
     Fetches comprehensive video information using yt-dlp.
-
-    Args:
-        url: The YouTube video URL to fetch information for.
-
-    Returns:
-        The info dictionary on success, otherwise None.
+    Includes network options to improve reliability on cloud servers.
     """
     ydl_opts = {
         "quiet": True,
         "noplaylist": True,
         "dump_single_json": True,
+        "ignoreerrors": True,  # Makes the process more resilient
+        "no_check_certificate": True,  # Helps bypass SSL issues on some servers
     }
     try:
         with YoutubeDL(ydl_opts) as ydl:
@@ -118,14 +110,10 @@ def fetch_video_info(url: str) -> Optional[Dict[str, Any]]:
 
 
 def process_video_formats(video_info: Dict[str, Any]) -> List[Dict[str, Any]]:
-    """
-    Parses video info to extract and sort available video formats,
-    adding descriptive labels like (4K).
-    """
+    """Parses video info to extract and sort available video formats."""
     video_formats: List[Dict[str, Any]] = []
     seen_resolutions: set[int] = set()
     target_resolutions: set[int] = {4320, 2160, 1440, 1080, 720}
-
     resolution_labels = {4320: "8K", 2160: "4K",
                          1440: "2K", 1080: "FHD", 720: "HD"}
 
@@ -182,7 +170,8 @@ def build_download_options(
     download_type: str, selection: str, safe_title: str
 ) -> Dict[str, Any]:
     """Builds the complete, clean yt-dlp options dictionary."""
-    base_opts = {"quiet": True, "noplaylist": True}
+    base_opts = {"quiet": True, "noplaylist": True,
+                 "no_check_certificate": True}
     if download_type == "audio":
         return {
             **base_opts,
@@ -301,6 +290,8 @@ def download():
 
 
 # --- Static Pages & SEO Files ---
+
+
 @app.route("/terms")
 def terms():
     return render_template("terms.html")
@@ -358,10 +349,11 @@ def internal_server_error(error):
 # 6. APPLICATION LAUNCH
 # ==============================================================================
 
+
 if __name__ == "__main__":
     app.logger.info("TubeSpire application starting...")
     app.logger.info(
         f"Download folder is set to: {os.path.abspath(app.config['DOWNLOAD_FOLDER'])}"
     )
     # For production, use a proper WSGI server like Gunicorn
-    app.run(debug=True, host="0.0.0.0")
+    app.run(debug=False, host="0.0.0.0")
