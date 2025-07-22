@@ -41,6 +41,8 @@ class Config:
         "SECRET_KEY", "a-very-secret-and-random-key-that-is-long-and-secure"
     )
     DOWNLOAD_FOLDER = "downloads"
+    # --- ADDED: Get proxy URL from environment variables ---
+    PROXY_URL = os.environ.get("PROXY_URL", None)
 
 
 app = Flask(__name__)
@@ -65,6 +67,7 @@ except OSError as e:
 @app.after_request
 def apply_security_headers(response: Response) -> Response:
     """Applies a set of robust security headers to every response."""
+    # ... (Security headers remain the same) ...
     response.headers["X-Frame-Options"] = "SAMEORIGIN"
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
@@ -89,24 +92,40 @@ def apply_security_headers(response: Response) -> Response:
 # ==============================================================================
 
 
+def get_base_ydl_opts() -> Dict[str, Any]:
+    """
+    Constructs the base dictionary of options for yt-dlp,
+    including the proxy if it's configured.
+    """
+    opts = {
+        "quiet": True,
+        "noplaylist": True,
+        "ignoreerrors": True,
+        "no_check_certificate": True,
+    }
+    # --- ADDED: Proxy integration ---
+    if app.config["PROXY_URL"]:
+        opts["proxy"] = app.config["PROXY_URL"]
+        app.logger.info("Using proxy for yt-dlp request.")
+    return opts
+
+
 def fetch_video_info(url: str) -> Optional[Dict[str, Any]]:
     """
     Fetches comprehensive video information using yt-dlp.
-    Includes network options to improve reliability on cloud servers.
     """
-    ydl_opts = {
-        "quiet": True,
-        "noplaylist": True,
-        "dump_single_json": True,
-        "ignoreerrors": True,  # Makes the process more resilient
-        "no_check_certificate": True,  # Helps bypass SSL issues on some servers
-    }
+    ydl_opts = get_base_ydl_opts()
+    ydl_opts["dump_single_json"] = True
+
     try:
         with YoutubeDL(ydl_opts) as ydl:
             return ydl.extract_info(url, download=False)
     except (DownloadError, Exception) as e:
         app.logger.error(f"Failed to fetch video info for '{url}': {e}")
         return None
+
+
+# ... (process_video_formats, get_audio_formats, sanitize_filename, format_duration remain the same) ...
 
 
 def process_video_formats(video_info: Dict[str, Any]) -> List[Dict[str, Any]]:
@@ -170,35 +189,42 @@ def build_download_options(
     download_type: str, selection: str, safe_title: str
 ) -> Dict[str, Any]:
     """Builds the complete, clean yt-dlp options dictionary."""
-    base_opts = {"quiet": True, "noplaylist": True,
-                 "no_check_certificate": True}
+    base_opts = get_base_ydl_opts()  # Get base options which include the proxy
+
     if download_type == "audio":
-        return {
-            **base_opts,
-            "format": "bestaudio/best",
-            "postprocessors": [
-                {
-                    "key": "FFmpegExtractAudio",
-                    "preferredcodec": "mp3",
-                    "preferredquality": selection,
-                }
-            ],
-            "outtmpl": os.path.join(
-                app.config["DOWNLOAD_FOLDER"], f"{safe_title} [{selection}kbps].%(ext)s"
-            ),
-        }
+        base_opts.update(
+            {
+                "format": "bestaudio/best",
+                "postprocessors": [
+                    {
+                        "key": "FFmpegExtractAudio",
+                        "preferredcodec": "mp3",
+                        "preferredquality": selection,
+                    }
+                ],
+                "outtmpl": os.path.join(
+                    app.config["DOWNLOAD_FOLDER"],
+                    f"{safe_title} [{selection}kbps].%(ext)s",
+                ),
+            }
+        )
+        return base_opts
+
     if download_type == "video":
         if "_" not in selection:
             raise ValueError("Invalid video selection format")
         format_id, res_str = selection.split("_", 1)
-        return {
-            **base_opts,
-            "format": f"{format_id}+bestaudio/bestvideo[height={res_str}]+bestaudio/best",
-            "outtmpl": os.path.join(
-                app.config["DOWNLOAD_FOLDER"], f"{safe_title} [{res_str}p].%(ext)s"
-            ),
-            "merge_output_format": "mp4",
-        }
+        base_opts.update(
+            {
+                "format": f"{format_id}+bestaudio/bestvideo[height={res_str}]+bestaudio/best",
+                "outtmpl": os.path.join(
+                    app.config["DOWNLOAD_FOLDER"], f"{safe_title} [{res_str}p].%(ext)s"
+                ),
+                "merge_output_format": "mp4",
+            }
+        )
+        return base_opts
+
     raise ValueError(f"Invalid download type specified: {download_type}")
 
 
@@ -290,6 +316,8 @@ def download():
 
 
 # --- Static Pages & SEO Files ---
+
+
 @app.route("/terms")
 def terms():
     return render_template("terms.html")
@@ -346,6 +374,7 @@ def internal_server_error(error):
 # ==============================================================================
 # 6. APPLICATION LAUNCH
 # ==============================================================================
+
 
 if __name__ == "__main__":
     app.logger.info("TubeSpire application starting...")
