@@ -3,8 +3,8 @@
 TubeSpire - A professional YouTube video and audio downloader web application.
 
 This Flask application provides a clean, user-friendly interface for downloading
-YouTube content in various resolutions and formats. It is built with a focus on
-clean code, robustness, and maintainability for a production environment.
+YouTube content. It is built with a focus on clean code, robustness, and
+maintainability for a production environment.
 
 Author: TubeSpire Team
 Version: 1.0
@@ -25,6 +25,7 @@ from flask import (
     url_for,
     redirect,
     Response,
+    make_response,
 )
 from yt_dlp import YoutubeDL
 from yt_dlp.utils import DownloadError
@@ -41,8 +42,6 @@ class Config:
         "SECRET_KEY", "a-very-secret-and-random-key-that-is-long-and-secure"
     )
     DOWNLOAD_FOLDER = "downloads"
-    # --- ADDED: Get proxy URL from environment variables ---
-    PROXY_URL = os.environ.get("PROXY_URL", None)
 
 
 app = Flask(__name__)
@@ -67,7 +66,6 @@ except OSError as e:
 @app.after_request
 def apply_security_headers(response: Response) -> Response:
     """Applies a set of robust security headers to every response."""
-    # ... (Security headers remain the same) ...
     response.headers["X-Frame-Options"] = "SAMEORIGIN"
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
@@ -76,11 +74,10 @@ def apply_security_headers(response: Response) -> Response:
     )
     csp = (
         "default-src 'self'; "
-        "script-src 'self' https://www.google-analytics.com https://static.hotjar.com; "
+        "script-src 'self' https://www.googletagmanager.com 'unsafe-inline'; "
         "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; "
         "font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; "
-        "img-src 'self' data: https://i.ytimg.com https://www.google-analytics.com; "
-        "connect-src 'self' https://www.google-analytics.com https://in.hotjar.com; "
+        "img-src 'self' data: https://i.ytimg.com; "
         "object-src 'none'; frame-ancestors 'none'; base-uri 'self';"
     )
     response.headers["Content-Security-Policy"] = csp
@@ -94,26 +91,23 @@ def apply_security_headers(response: Response) -> Response:
 
 def get_base_ydl_opts() -> Dict[str, Any]:
     """
-    Constructs the base dictionary of options for yt-dlp,
-    including the proxy if it's configured.
+    Constructs the base dictionary of options for yt-dlp. This is critical
+    to ensure all requests appear legitimate to YouTube.
     """
-    opts = {
+    return {
         "quiet": True,
         "noplaylist": True,
         "ignoreerrors": True,
         "no_check_certificate": True,
+        "http_headers": {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36",
+            "Accept-Language": "en-US,en;q=0.5",
+        },
     }
-    # --- ADDED: Proxy integration ---
-    if app.config["PROXY_URL"]:
-        opts["proxy"] = app.config["PROXY_URL"]
-        app.logger.info("Using proxy for yt-dlp request.")
-    return opts
 
 
 def fetch_video_info(url: str) -> Optional[Dict[str, Any]]:
-    """
-    Fetches comprehensive video information using yt-dlp.
-    """
+    """Fetches comprehensive video information using yt-dlp."""
     ydl_opts = get_base_ydl_opts()
     ydl_opts["dump_single_json"] = True
 
@@ -123,9 +117,6 @@ def fetch_video_info(url: str) -> Optional[Dict[str, Any]]:
     except (DownloadError, Exception) as e:
         app.logger.error(f"Failed to fetch video info for '{url}': {e}")
         return None
-
-
-# ... (process_video_formats, get_audio_formats, sanitize_filename, format_duration remain the same) ...
 
 
 def process_video_formats(video_info: Dict[str, Any]) -> List[Dict[str, Any]]:
@@ -189,7 +180,7 @@ def build_download_options(
     download_type: str, selection: str, safe_title: str
 ) -> Dict[str, Any]:
     """Builds the complete, clean yt-dlp options dictionary."""
-    base_opts = get_base_ydl_opts()  # Get base options which include the proxy
+    base_opts = get_base_ydl_opts()
 
     if download_type == "audio":
         base_opts.update(
@@ -265,14 +256,12 @@ def download():
     """Handles the file download logic with robust file identification."""
     video_url = request.form.get("video_url")
     download_type = request.form.get("type")
+    selection = request.form.get("selection")
+
     try:
-        selection = (
-            request.form.get("video_selection")
-            if download_type == "video"
-            else request.form.get("audio_bitrate")
-        )
         if not all([video_url, download_type, selection]):
-            raise ValueError("A required field was missing from the request.")
+            flash("Invalid download request. Please select a format.")
+            return redirect(url_for("index"))
 
         info = fetch_video_info(video_url)
         if not info:
@@ -295,11 +284,17 @@ def download():
                 f"Download finished. Sending file: '{os.path.basename(final_filename)}'"
             )
 
-        return send_from_directory(
-            os.path.dirname(final_filename),
-            os.path.basename(final_filename),
-            as_attachment=True,
+        # Create a response object
+        response = make_response(
+            send_from_directory(
+                os.path.dirname(final_filename),
+                os.path.basename(final_filename),
+                as_attachment=True,
+            )
         )
+        # THE FIX IS HERE: Set the cookie on the root path '/'
+        response.set_cookie("downloadComplete", "true", max_age=20, path="/")
+        return response
 
     except (DownloadError, ValueError, FileNotFoundError) as e:
         app.logger.error(
@@ -316,8 +311,6 @@ def download():
 
 
 # --- Static Pages & SEO Files ---
-
-
 @app.route("/terms")
 def terms():
     return render_template("terms.html")
@@ -333,18 +326,6 @@ def about():
     return render_template("about.html")
 
 
-@app.route("/robots.txt")
-def robots_txt():
-    """Serves the robots.txt file from the project root."""
-    return send_from_directory(app.root_path, "robots.txt")
-
-
-@app.route("/sitemap.xml")
-def sitemap_xml():
-    """Serves the sitemap.xml file from the project root."""
-    return send_from_directory(app.root_path, "sitemap.xml")
-
-
 # ==============================================================================
 # 5. ERROR HANDLERS
 # ==============================================================================
@@ -353,21 +334,18 @@ def sitemap_xml():
 @app.errorhandler(403)
 def forbidden_error(error):
     """Handles 403 Forbidden errors."""
-    app.logger.warning(f"Forbidden error at {request.url}: {error}")
     return render_template("errors/403.html"), 403
 
 
 @app.errorhandler(404)
 def not_found_error(error):
     """Handles 404 Not Found errors."""
-    app.logger.warning(f"Page not found at {request.url}: {error}")
     return render_template("errors/404.html"), 404
 
 
 @app.errorhandler(500)
 def internal_server_error(error):
     """Handles 500 Internal Server errors."""
-    app.logger.error(f"Internal server error at {request.url}: {error}")
     return render_template("errors/500.html"), 500
 
 
@@ -375,11 +353,5 @@ def internal_server_error(error):
 # 6. APPLICATION LAUNCH
 # ==============================================================================
 
-
 if __name__ == "__main__":
-    app.logger.info("TubeSpire application starting...")
-    app.logger.info(
-        f"Download folder is set to: {os.path.abspath(app.config['DOWNLOAD_FOLDER'])}"
-    )
-    # For production, use a proper WSGI server like Gunicorn
     app.run(debug=False, host="0.0.0.0")

@@ -1,10 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <script>
+      (function (w, d, s, l, i) {
+        w[l] = w[l] || [];
+        w[l].push({
+          "gtm.start": new Date().getTime(),
+          event: "gtm.js",
+        });
+        var f = d.getElementsByTagName(s)[0],
+          j = d.createElement(s),
+          dl = l != "dataLayer" ? "&l=" + l : "";
+        j.async = true;
+        j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
+        f.parentNode.insertBefore(j, f);
+      })(window, document, "script", "dataLayer", "GTM-PQCLP8VP");
+    </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#0D1117" />
-
     <title>
       {% block title %}TubeSpire - Elite YouTube Downloader{% endblock %}
     </title>
@@ -18,7 +32,6 @@
     />
     <meta name="author" content="TubeSpire" />
     <link rel="canonical" href="{{ request.url_root }}" />
-
     <meta property="og:title" content="TubeSpire - Elite YouTube Downloader" />
     <meta
       property="og:description"
@@ -32,7 +45,6 @@
     />
     <meta property="og:image:alt" content="TubeSpire Logo" />
     <meta property="og:site_name" content="TubeSpire" />
-
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="TubeSpire - Elite YouTube Downloader" />
     <meta
@@ -43,7 +55,6 @@
       name="twitter:image"
       content="{{ url_for('static', filename='og-image.png') }}"
     />
-
     <link
       rel="icon"
       href="{{ url_for('static', filename='favicon.ico') }}"
@@ -58,7 +69,6 @@
       rel="apple-touch-icon"
       href="{{ url_for('static', filename='apple-touch-icon.png') }}"
     />
-
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -76,10 +86,17 @@
   </head>
 
   <body>
+    <noscript>
+      <iframe
+        src="https://www.googletagmanager.com/ns.html?id=GTM-PQCLP8VP"
+        height="0"
+        width="0"
+        style="display: none; visibility: hidden"
+      ></iframe>
+    </noscript>
     <div class="page-wrapper">
       {% include 'navbar.html' %} {% block content %}{% endblock %}
     </div>
-
     {% include 'footer.html' %}
 
     <div id="download-modal" class="download-modal">
@@ -113,6 +130,7 @@
 
     <script>
       document.addEventListener("DOMContentLoaded", () => {
+        // --- Cookie Consent Logic ---
         const consentBanner = document.getElementById("cookie-consent-banner");
         const consentBtn = document.getElementById("cookie-consent-btn");
         if (consentBanner && consentBtn) {
@@ -124,24 +142,59 @@
             consentBanner.style.display = "none";
           });
         }
+
+        // --- Bulletproof Download Modal Logic ---
         const downloadButtons = document.querySelectorAll(
           ".download-trigger-btn"
         );
         const modal = document.getElementById("download-modal");
-        if (downloadButtons.length > 0 && modal) {
+        const downloadForm = document.getElementById("download-form");
+        const typeInput = document.getElementById("download_type");
+        const selectionInput = document.getElementById("download_selection");
+
+        if (
+          downloadButtons.length > 0 &&
+          modal &&
+          downloadForm &&
+          typeInput &&
+          selectionInput
+        ) {
           downloadButtons.forEach((button) => {
             button.addEventListener("click", function (event) {
-              event.preventDefault();
+              const downloadType = this.dataset.type;
+              const downloadSelection = this.dataset.selection;
+
+              typeInput.value = downloadType;
+              selectionInput.value = downloadSelection;
+
               modal.classList.add("visible");
-              const form = this.closest("form");
-              if (form) {
-                setTimeout(() => {
-                  form.submit();
-                }, 150);
-              }
+
+              // Periodically check for the download complete cookie
+              let checks = 0;
+              const interval = setInterval(function () {
+                checks++;
+                // Check for the cookie
+                if (
+                  document.cookie
+                    .split(";")
+                    .some((item) => item.trim().startsWith("downloadComplete="))
+                ) {
+                  modal.classList.remove("visible");
+                  // Clear the cookie by setting its expiry date to the past
+                  document.cookie =
+                    "downloadComplete=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
+                  clearInterval(interval);
+                }
+                // Stop checking after 20 seconds as a fallback
+                if (checks > 40) {
+                  modal.classList.remove("visible");
+                  clearInterval(interval);
+                }
+              }, 500); // Check every 500ms
+
               setTimeout(() => {
-                modal.classList.remove("visible");
-              }, 8000);
+                downloadForm.submit();
+              }, 150);
             });
           });
         }

@@ -1,5 +1,5 @@
 # ==============================================================================
-# /.github/workflows/lighthouse.yml (Production Grade & Professional)
+# /.github/workflows/lighthouse.yml (Production Grade)
 # ==============================================================================
 # This GitHub Actions workflow runs a Lighthouse CI audit on every push to the
 # main branch. It builds the application, starts a live server, runs the audit,
@@ -13,7 +13,7 @@ name: Lighthouse CI
 on:
   # Triggers the workflow on push events but only for the "main" branch
   push:
-    branches: [main]
+    branches: [ main ]
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
@@ -34,7 +34,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.13" # Specify your project's Python version
+          python-version: "3.11" # Using a stable, recent Python version
 
       # ------------------------------------------------------------------------
       # Step 3: Install Python dependencies
@@ -51,7 +51,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18
-          # REMOVED: cache: "npm" line was here. It's not needed for this project.
+          cache: "npm" # Cache npm packages for faster subsequent runs
 
       # ------------------------------------------------------------------------
       # Step 5: Install Lighthouse CI globally

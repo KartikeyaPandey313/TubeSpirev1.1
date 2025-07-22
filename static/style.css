@@ -1,5 +1,5 @@
 /* ---
-   Version: 1.0
+   TubeSpire Stylesheet v1.1
    Author: TubeSpire Team
    --- */
 
@@ -844,5 +844,56 @@ main {
 
   .nav-links {
     display: none;
+  }
+}
+
+/* ============================================================================== */
+/* 10. CREATOR PROFILE (About Page)
+/* ============================================================================== */
+.creator-profile-card {
+  background-color: var(--bg-dark);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.creator-avatar img {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 3px solid var(--surface);
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+}
+
+.creator-info h3 {
+  font-family: var(--font-family-heading);
+  font-size: 1.8rem;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.creator-info .creator-bio {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin-bottom: 1.5rem;
+}
+
+.creator-info .creator-links {
+  display: flex;
+  gap: 0.5rem;
+}
+
+@media (max-width: 600px) {
+  .creator-profile-card {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .creator-info .creator-links {
+    justify-content: center;
   }
 }
