@@ -39,7 +39,7 @@ Enhancement suggestions are tracked as [GitHub Issues](https://github.com/Kartik
 1.  **Fork the repository** by clicking the 'Fork' button on the top right of the page.
 2.  **Clone your fork** to your local machine:
     ```bash
-    git clone [https://github.com/YOUR_USERNAME/TubeSpire.git](https://github.com/YOUR_USERNAME/TubeSpire.git)
+    git clone [https://github.com/KartikeyaPandey313/TubeSpire.git](https://github.com/KartikeyaPandey313/TubeSpire.git)
     ```
 3.  **Create a new branch** for your changes. Use a descriptive name (e.g., `feat/add-new-feature` or `fix/resolve-bug-123`).
     ```bash
