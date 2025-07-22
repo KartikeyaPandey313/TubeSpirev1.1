@@ -1,0 +1,48 @@
+📂 TubeSpire - Professional Project Structure
+
+This document provides a beautifully detailed overview of the TubeSpire project structure. Each file and directory is organized with a clear purpose, ensuring the application is clean, maintainable, and scalable for a production-grade environment.
+
+tubespire/
+│
+├── .github/
+│   └── workflows/
+│       └── lighthouse.yml       # 🏛️ The automated quality gatekeeper; runs performance, SEO, and accessibility audits on every deploy.
+│
+├── app.py                       # 🧠 The central nervous system of the application; handles all backend logic, routing, and security.
+├── requirements.txt             # 📦 The dependency manifest; lists all Python libraries required to run the project.
+│
+├── static/
+│   ├── style.css                # 🎨 The heart of the visual identity; a single, optimized stylesheet that defines the website's professional aesthetic.
+│   ├── icons/                   # ✨ A curated collection of custom SVG icons for a unique brand identity.
+│   ├── favicon.ico              # 🌐 The classic favicon for universal browser compatibility.
+│   ├── favicon.svg              # 💎 A modern, high-resolution SVG favicon for contemporary browsers.
+│   ├── apple-touch-icon.png     # 📱 The beautiful icon for iOS home screens and bookmarks.
+│   └── og-image.png             # 🖼️ The stunning image that represents your brand when links are shared on social media.
+│
+├── templates/
+│   ├── errors/                  # 👻 A collection of beautifully designed, user-friendly error handlers for a polished user experience.
+│   │   ├── 403.html             # Handles "Access Forbidden" errors with a unique, animated design.
+│   │   ├── 404.html             # Handles "Page Not Found" errors with a unique, animated design.
+│   │   └── 500.html             # Handles "Server Error" errors with a unique, animated design.
+│   │
+│   ├── base.html                # 🏗️ The foundational blueprint for all pages; contains the master layout, SEO tags, and analytics hooks.
+│   ├── navbar.html              # 🧭 A modular, reusable UI component for the site's primary navigation.
+│   ├── footer.html              # ⚓ A modular, reusable UI component for the site's footer and final links.
+│   │
+│   ├── index.html               # 🏠 The main event; the template for the homepage and core application interface.
+│   ├── about.html               # 🌟 The story behind the project; the template for the "About Us" page.
+│   ├── terms.html               # 📜 The legal framework; the template for the "Terms of Service" page.
+│   └── privacy.html             # 🔒 Our commitment to users; the template for the "Privacy Policy" page.
+│
+├── guide/
+│   ├── ADMIN_GUIDE.md           # 🔑 The administrator's key; a deep-dive into the codebase and architecture for the development team.
+│   └── HOW_TO_USE.md            # 👋 A friendly welcome; a simple, visual guide for end-users.
+│
+├── extras/                      # 🧩 A folder for supplementary materials not essential for the core application logic (e.g., design assets, notes).
+│
+├── downloads/                   # 🗑️ A transient storage location for processed media before it's delivered to the user (should be in .gitignore).
+│
+├── .gitattributes               # ⚙️ A Git configuration file to enforce consistent text formatting (like line endings) across all collaborators.
+├── .gitignore                   # 🚫 A list of files and folders (like `venv/` and `downloads/`) that Git should intentionally ignore.
+│
+├── CONTRIBUTING.md              # 🤝 The gateway for collaboration; provides guidelines for developers who wish to contribute to

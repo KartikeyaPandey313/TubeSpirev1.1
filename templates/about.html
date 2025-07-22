@@ -1,0 +1,36 @@
+{% extends "base.html" %} {% block title %}About Us - TubeSpire{% endblock %} {%
+block content %}
+<main class="container legal-page">
+  <header class="legal-header">
+    <h1>About TubeSpire</h1>
+    <p>Our Mission, Vision, and the Technology Behind the Service</p>
+  </header>
+
+  <section class="legal-content">
+    <h2>Our Mission</h2>
+    <p>
+      Our mission is to provide a simple, powerful, and reliable tool for users
+      to save online video content for offline use. Whether you're a content
+      creator or editor needing clips for a edit, a student saving educational
+      lectures, or simply someone who wants to watch videos without an internet
+      connection, our service is built to empower you.
+    </p>
+
+    <h2>Our Technology</h2>
+    <p>
+      TubeSpire is built on a foundation of robust, open-source technology. We
+      utilize the powerful `yt-dlp` Python library, the gold standard for online
+      video downloading. This allows us to support a wide range of formats and
+      resolutions, including high-definition content up to 8K and beyond.
+    </p>
+
+    <h2>Our Commitment to Privacy</h2>
+    <p>
+      We take your privacy seriously. We do not require registration, and we do
+      not log user activity. The video URLs you enter are processed ephemerally
+      and are never stored long-term. For more details, please review our
+      <a href="{{ url_for('privacy') }}">Privacy Policy</a>.
+    </p>
+  </section>
+</main>
+{% endblock %}

@@ -1,0 +1,230 @@
+{% extends "base.html" %} {% block title %}TubeSpire - Elite YouTube
+Downloader{% endblock %} {% block content %}
+<header class="hero">
+  <div class="container">
+    <h1 class="hero-title">The Ultimate YouTube Downloader</h1>
+    <p class="hero-subtitle">
+      Download videos and audio in the highest quality available, completely
+      free. <br />Simple, fast, and reliable.
+    </p>
+    <div class="card url-input-card">
+      <form method="POST" action="{{ url_for('index') }}" class="url-form">
+        <div class="input-group">
+          <i class="fas fa-link"></i>
+          <input
+            type="text"
+            name="url"
+            placeholder="Paste your YouTube link here..."
+            required
+            aria-label="YouTube URL Input"
+          />
+        </div>
+        <button type="submit" class="btn btn-primary">
+          <span>Fetch Video</span> <i class="fas fa-arrow-right"></i>
+        </button>
+      </form>
+    </div>
+  </div>
+</header>
+
+<main class="container">
+  {% with messages = get_flashed_messages() %} {% if messages %}
+  <div class="flash-messages">
+    {% for message in messages %}
+    <p class="flash-error" role="alert">{{ message }}</p>
+    {% endfor %}
+  </div>
+  {% endif %} {% endwith %} {% if video_info %}
+  <section id="results" class="card video-results-card">
+    <div class="video-preview">
+      <img
+        src="{{ video_info.thumbnail }}"
+        alt="Thumbnail for {{ video_info.title }}"
+        class="thumbnail"
+        loading="lazy"
+      />
+      <div class="details">
+        <h2>{{ video_info.title }}</h2>
+        <p class="meta">
+          <span
+            ><i class="fas fa-user-circle"></i> {{ video_info.uploader }}</span
+          >
+          <span><i class="far fa-clock"></i> {{ formatted_duration }}</span>
+        </p>
+      </div>
+    </div>
+
+    <div class="download-tabs">
+      <div class="tab-buttons" role="tablist">
+        <button
+          class="tab-btn active"
+          onclick="openTab(event, 'video-downloads')"
+          role="tab"
+          aria-selected="true"
+          aria-controls="video-downloads"
+        >
+          <i class="fas fa-video"></i> Video
+        </button>
+        <button
+          class="tab-btn"
+          onclick="openTab(event, 'audio-downloads')"
+          role="tab"
+          aria-selected="false"
+          aria-controls="audio-downloads"
+        >
+          <i class="fas fa-music"></i> Audio
+        </button>
+      </div>
+
+      <div id="video-downloads" class="tab-content active" role="tabpanel">
+        <form method="POST" action="{{ url_for('download') }}">
+          <input
+            type="hidden"
+            name="video_url"
+            value="{{ video_info.webpage_url }}"
+          />
+          <input type="hidden" name="type" value="video" />
+          {% for format in video_formats %}
+          <button
+            type="submit"
+            name="video_selection"
+            value="{{ format.format_id }}_{{ format.height }}"
+            class="format-btn download-trigger-btn"
+          >
+            <div class="format-label">
+              <i class="fa-solid fa-clapperboard"></i
+              ><strong>{{ format.resolution }}</strong
+              ><span class="format-note">{{ format.note }}</span>
+            </div>
+            <div class="format-action">
+              <i class="fa-solid fa-download"></i> Download
+            </div>
+          </button>
+          {% else %}
+          <p class="no-formats">No compatible MP4 video formats were found.</p>
+          {% endfor %}
+        </form>
+      </div>
+
+      <div id="audio-downloads" class="tab-content" role="tabpanel">
+        <form method="POST" action="{{ url_for('download') }}">
+          <input
+            type="hidden"
+            name="video_url"
+            value="{{ video_info.webpage_url }}"
+          />
+          <input type="hidden" name="type" value="audio" />
+          {% for format in audio_formats %}
+          <button
+            type="submit"
+            name="audio_bitrate"
+            value="{{ format.bitrate }}"
+            class="format-btn download-trigger-btn"
+          >
+            <div class="format-label">
+              <i class="fa-solid fa-headphones"></i
+              ><strong>{{ format.quality }}</strong
+              ><span class="format-note">MP3</span>
+            </div>
+            <div class="format-action">
+              <i class="fa-solid fa-download"></i> Download
+            </div>
+          </button>
+          {% else %}
+          <p class="no-formats">Audio conversion is currently unavailable.</p>
+          {% endfor %}
+        </form>
+      </div>
+    </div>
+  </section>
+  {% endif %}
+
+  <section id="why-us" class="content-section">
+    <h2 class="section-title">Why Use TubeSpire?</h2>
+    <div class="features-grid">
+      <div class="feature-card">
+        <i class="fas fa-bolt"></i>
+        <h3>High-Speed Downloads</h3>
+        <p>
+          Our optimized backend processes your request instantly, delivering
+          files at maximum speed.
+        </p>
+      </div>
+      <div class="feature-card">
+        <i class="fas fa-photo-film"></i>
+        <h3>Unmatched Quality</h3>
+        <p>
+          Download videos in up to 4K resolution. We merge the best video and
+          audio streams for you.
+        </p>
+      </div>
+      <div class="feature-card">
+        <i class="fas fa-shield-halved"></i>
+        <h3>Secure & Anonymous</h3>
+        <p>
+          No registration, no tracking. Your privacy is our top priority on
+          every single download.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section id="how-it-works" class="content-section">
+    <h2 class="section-title">How It Works</h2>
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-number">1</div>
+        <h3>Paste URL</h3>
+        <p>
+          Find your desired video on YouTube and copy its URL from the address
+          bar.
+        </p>
+      </div>
+      <div class="step-card">
+        <div class="step-number">2</div>
+        <h3>Fetch & Choose</h3>
+        <p>
+          Paste the link into the input field above and click "Fetch". Choose
+          your preferred format and quality.
+        </p>
+      </div>
+      <div class="step-card">
+        <div class="step-number">3</div>
+        <h3>Download</h3>
+        <p>
+          Click the download button. Your file will be processed and saved to
+          your device in seconds.
+        </p>
+      </div>
+    </div>
+  </section>
+</main>
+{% endblock %} {% block scripts %}
+<script>
+  function openTab(evt, tabName) {
+    const tabcontent = document.querySelectorAll(".tab-content");
+    tabcontent.forEach((tab) => {
+      tab.style.display = "none";
+      tab.classList.remove("active");
+    });
+    const tablinks = document.querySelectorAll(".tab-btn");
+    tablinks.forEach((link) => {
+      link.classList.remove("active");
+      link.setAttribute("aria-selected", "false");
+    });
+    const activeTab = document.getElementById(tabName);
+    activeTab.style.display = "block";
+    activeTab.classList.add("active");
+    evt.currentTarget.classList.add("active");
+    evt.currentTarget.setAttribute("aria-selected", "true");
+  }
+  document.addEventListener("DOMContentLoaded", () => {
+    const videoTab = document.getElementById("video-downloads");
+    if (videoTab) {
+      videoTab.style.display = "block";
+      const audioTab = document.getElementById("audio-downloads");
+      if (audioTab) audioTab.style.display = "none";
+    }
+  });
+</script>
+{% endblock %}

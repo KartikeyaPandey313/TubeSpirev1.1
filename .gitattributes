@@ -1,2 +1,30 @@
-# Auto detect text files and perform LF normalization
-* text=auto
+# ==============================================================================
+# .gitattributes for TubeSpire
+# ==============================================================================
+# This file defines attributes for pathnames to maintain consistency.
+
+# --- Global Settings ---
+# Auto-detect text files and ensure they use consistent line endings (LF).
+# This prevents messy commits when developers use different operating systems.
+* text=auto eol=lf
+
+# --- Specific File Types ---
+# Explicitly tell Git to treat these file types as text with LF line endings.
+*.py text eol=lf
+*.html text eol=lf
+*.css text eol=lf
+*.js text eol=lf
+*.md text eol=lf
+*.txt text eol=lf
+*.xml text eol=lf
+*.yml text eol=lf
+*.svg text eol=lf
+
+# --- Binary Files ---
+# Tell Git to treat these common image formats as binary files.
+# This prevents Git from trying to change their line endings, which can corrupt them.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary

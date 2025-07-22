@@ -1,0 +1,49 @@
+# ==============================================================================
+# .gitignore for TubeSpire (v3)
+# ==============================================================================
+# This file specifies intentionally untracked files that Git should ignore.
+
+# --- Python Virtual Environments ---
+# Never commit the virtual environment folder.
+venv/
+.venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# --- Python Cache ---
+# Ignore Python bytecode files and cache directories.
+__pycache__/
+*.py[cod]
+*$py.class
+
+# --- Temporary Downloaded Media ---
+# This is the most important rule for this project.
+# NEVER commit the video and audio files that users download.
+downloads/
+
+# --- IDE and Editor Directories ---
+# Ignore configuration folders from common editors like VS Code.
+.vscode/
+.idea/
+
+# --- Operating System Files ---
+# Ignore OS-specific files (e.g., .DS_Store for macOS, Thumbs.db for Windows).
+.DS_Store
+Thumbs.db
+
+# --- Environment Variables ---
+# Never commit files containing secret keys or environment variables.
+.env
+.env.*
+
+# --- Log Files ---
+# Ignore log files that may be generated during development or production.
+*.log
+logs/
+
+# --- Documentation & Project Files ---
+# Note: It is standard practice to commit these files to your repository.
+guide/
+extras/

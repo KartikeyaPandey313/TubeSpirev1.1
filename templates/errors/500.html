@@ -1,0 +1,24 @@
+{% extends "base.html" %} {% block title %}Server Error - TubeSpire{% endblock
+%} {% block content %}
+<main class="container">
+  <div class="error-page-container">
+    <div class="error-graphic">
+      <div class="error-code">500</div>
+      <img
+        src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTE1IiBmaWxsPSJub25lIj4KICA8cGF0aCBkPSJNNzUgMTExLjVINDJDNDIgMTA0LjUgMzggOTcgMjUgOTdDMTIgOTcgNS41IDEwMy41IDUuNSAxMTFWMTE1SDEwMC41VjExMS41QzEwMC41IDEwMy41IDk1IDk3IDgyIDk3QzY5IDk3IDc1IDEwNC41IDc1IDExMS41WiIgZmlsbD0iI0M5RDFEOCIvPgogIDxwYXRoIGQ9Ik0xMi41IDExMS41QzEyLjUgMTA2LjUgMTggMTAyIDI1IDEwMkMzMiAxMDIgMzcgMTA2LjUgMzcgMTExLjVWMTE1SDIuNVYxMTFDMi41IDEwMy41IDggOTcgMTUgOTdDMTUgOTcgMTIuNSAxMDQuNSAxMi41IDExMS41WiIgZmlsbD0iI0M5RDFEOCIvPgogIDxwYXRoIGQ9Ik05Mi41IDExMS41QzgyLjUgMTAwLjUgNzIgOTcgNjUgOTdDNzggOTcgODUuNSAxMDMuNSA4NS41IDExMVYxMTVIOTIuNVYxMTEuNVoiIGZpbGw9IiNDOUQxRDgiLz4KICA8cGF0aCBkPSJNMCA4N0MwIDU0LjUgMjUgMzcgNTIgMzVDNzkgMzcgOTcgNTQuNSA5NyA4N0w5NyA5N0gwVjg3WiIgZmlsbD0iI0M5RDFEOCIvPgogIDxwYXRoIGQ9Ik0zMy41IDY0QzMyLjUgNjYuNSAzMC41IDY4IDI4IDY4QzI1LjUgNjggMjMuNSA2Ni41IDIyLjUgNjRMMjggNTlMMzMuNSA2NFoiIGZpbGw9IiMwRDExMTciLz4KICA8cGF0aCBkPSJNNzMuNSA2NEM3Mi41IDY2LjUgNzAuNSA2OCA2OCA2OEM2NS41IDY4IDYzLjUgNjYuNSA2Mi41IDY0TDY4IDU5TDczLjUgNjRaIiBmaWxsPSIjMEQxMTE3Ii8+Cjwvc3ZnPg=="
+        alt="Sad Ghost Mascot"
+        class="error-mascot"
+      />
+      <div class="error-mascot-shadow"></div>
+    </div>
+    <h2 class="error-title">Internal Server Error</h2>
+    <p class="error-description">
+      Sorry, something went wrong on our end. We have been notified and are
+      working to fix it.
+    </p>
+    <a href="{{ url_for('index') }}" class="btn btn-primary error-button">
+      <i class="fas fa-home"></i> Go Back to Homepage
+    </a>
+  </div>
+</main>
+{% endblock %}

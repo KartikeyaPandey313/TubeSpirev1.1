@@ -1,0 +1,12 @@
+# ==============================================================================
+# /robots.txt
+# ==============================================================================
+# This file tells search engine crawlers which pages or files the crawler
+# can or can't request from your site.
+
+User-agent: *
+Allow: /
+Disallow: /download
+
+# Sitemap location for search engine discovery
+Sitemap: https://www.tubespire.onrender.com/sitemap.xml

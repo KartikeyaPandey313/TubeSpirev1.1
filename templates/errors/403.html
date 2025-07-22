@@ -1,0 +1,24 @@
+{% extends "base.html" %} {% block title %}Access Forbidden - TubeSpire{%
+endblock %} {% block content %}
+<main class="container">
+  <div class="error-page-container">
+    <div class="error-graphic">
+      <div class="error-code">403</div>
+      <img
+        src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTE1IiBmaWxsPSJub25lIj4KICA8cGF0aCBkPSJNNzUgMTExLjVINDJDNDIgMTA0LjUgMzggOTcgMjUgOTdDMTIgOTcgNS41IDEwMy41IDUuNSAxMTFWMTE1SDEwMC41VjExMS41QzEwMC41IDEwMy41IDk1IDk3IDgyIDk3QzY5IDk3IDc1IDEwNC41IDc1IDExMS41WiIgZmlsbD0iI0M5RDFEOCIvPgogIDxwYXRoIGQ9Ik0xMi41IDExMS41QzEyLjUgMTA2LjUgMTggMTAyIDI1IDEwMkMzMiAxMDIgMzcgMTA2LjUgMzcgMTExLjVWMTE1SDIuNVYxMTFDMi41IDEwMy41IDggOTcgMTUgOTdDMTUgOTcgMTIuNSAxMDQuNSAxMi41IDExMS41WiIgZmlsbD0iI0M5RDFEOCIvPgogIDxwYXRoIGQ9Ik05Mi41IDExMS41QzgyLjUgMTAwLjUgNzIgOTcgNjUgOTdDNzggOTcgODUuNSAxMDMuNSA4NS41IDExMVYxMTVIOTIuNVYxMTEuNVoiIGZpbGw9IiNDOUQxRDgiLz4KICA8cGF0aCBkPSJNMCA4N0MwIDU0LjUgMjUgMzcgNTIgMzVDNzkgMzcgOTcgNTQuNSA5NyA4N0w5NyA5N0gwVjg3WiIgZmlsbD0iI0M5RDFEOCIvPgogIDxwYXRoIGQ9Ik0zNiA2OUgzMkwyOCA2NUwyNCA2OUwyMCA2NUwxNiA2OUwxMiA2NUw4IDY5IiBzdHJva2U9IiMwRDExMTciIHN0cm9rZS1widthPSI0IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICA8cGF0aCBkPSJNNzYgNjlINzJMNjggNjVMNjQgNjlMNjAgNjVMNTYgNjlMNTIgNjVMNDggNjkiIHN0cm9rZT0iIzBEMTEXMTciIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+Cjwvc3ZnPg=="
+        alt="Angry Ghost Mascot"
+        class="error-mascot"
+      />
+      <div class="error-mascot-shadow"></div>
+    </div>
+    <h2 class="error-title">Access Forbidden</h2>
+    <p class="error-description">
+      You do not have permission to access this page. Please check your
+      credentials or contact support.
+    </p>
+    <a href="{{ url_for('index') }}" class="btn btn-primary error-button">
+      <i class="fas fa-home"></i> Go Back to Homepage
+    </a>
+  </div>
+</main>
+{% endblock %}

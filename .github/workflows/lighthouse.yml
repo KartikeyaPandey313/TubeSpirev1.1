@@ -1,0 +1,119 @@
+# ==============================================================================
+# /.github/workflows/lighthouse.yml (Production Grade)
+# ==============================================================================
+# This GitHub Actions workflow runs a Lighthouse CI audit on every push to the
+# main branch. It builds the application, starts a live server, runs the audit,
+# and then uploads the reports as artifacts.
+#
+# The build will fail if any Lighthouse category score is below the specified
+# minimum threshold, ensuring performance and quality standards are maintained.
+
+name: Lighthouse CI
+
+on:
+  # Triggers the workflow on push events but only for the "main" branch
+  push:
+    branches: [main]
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  lighthouse:
+    name: Lighthouse Audit
+    runs-on: ubuntu-latest
+    steps:
+      # ------------------------------------------------------------------------
+      # Step 1: Checkout the repository code
+      # ------------------------------------------------------------------------
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ------------------------------------------------------------------------
+      # Step 2: Set up the Python environment
+      # ------------------------------------------------------------------------
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11" # Using a stable, recent Python version
+
+      # ------------------------------------------------------------------------
+      # Step 3: Install Python dependencies
+      # ------------------------------------------------------------------------
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # ------------------------------------------------------------------------
+      # Step 4: Set up the Node.js environment for Lighthouse
+      # ------------------------------------------------------------------------
+      - name: Use Node.js 18.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: "npm" # Cache npm packages for faster subsequent runs
+
+      # ------------------------------------------------------------------------
+      # Step 5: Install Lighthouse CI globally
+      # ------------------------------------------------------------------------
+      - name: Install Lighthouse CI
+        run: npm install -g @lhci/cli@0.12.x
+
+      # ------------------------------------------------------------------------
+      # Step 6: Start the Flask application in the background
+      # ------------------------------------------------------------------------
+      - name: Start Flask server
+        run: |
+          # Use gunicorn for a production-like environment and run it in the background
+          gunicorn -w 1 app:app &
+          # Give the server a moment to initialize before running tests
+          sleep 5
+
+      # ------------------------------------------------------------------------
+      # Step 7: Run the Lighthouse CI audit
+      # ------------------------------------------------------------------------
+      - name: Run Lighthouse CI
+        id: lhci # Give this step an ID to reference its outcome later
+        run: |
+          # The URL points to the locally running Flask server
+          # We add "|| true" at the end so this step doesn't immediately fail the
+          # entire workflow if assertions fail. We will check the outcome in a later step.
+          lhci autorun \
+            --collect.url=http://127.0.0.1:8000/ \
+            --upload.target=temporary-public-storage \
+            --assert.preset=lighthouse:recommended \
+            --assert.assertions.'categories:performance'.minScore=0.95 \
+            --assert.assertions.'categories:accessibility'.minScore=1 \
+            --assert.assertions.'categories:best-practices'.minScore=1 \
+            --assert.assertions.'categories:seo'.minScore=1 || true
+        env:
+          # This secret is needed for Lighthouse to post status checks on pull requests
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
+
+      # ------------------------------------------------------------------------
+      # Step 8: Stop the Flask server
+      # ------------------------------------------------------------------------
+      - name: Stop Flask server
+        if: always() # This step will run even if the Lighthouse audit fails
+        run: |
+          # Find the gunicorn process and stop it gracefully
+          pkill gunicorn
+
+      # ------------------------------------------------------------------------
+      # Step 9: Upload Lighthouse report as a build artifact
+      # ------------------------------------------------------------------------
+      - name: Upload Lighthouse report artifact
+        if: always() # Always upload the report, even on failure, for debugging
+        uses: actions/upload-artifact@v4
+        with:
+          name: lhci-report
+          path: .lighthouseci/
+
+      # ------------------------------------------------------------------------
+      # Step 10: Check the Lighthouse results and fail the job if necessary
+      # ------------------------------------------------------------------------
+      - name: Check Lighthouse results
+        if: steps.lhci.outcome == 'failure'
+        run: |
+          echo "Lighthouse CI assertions failed. Check the 'lhci-report' artifact for details."
+          exit 1

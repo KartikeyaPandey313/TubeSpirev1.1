@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0D1117" />
+
+    <title>
+      {% block title %}TubeSpire - Elite YouTube Downloader{% endblock %}
+    </title>
+    <meta
+      name="description"
+      content="Download YouTube videos and audio in the highest quality available (4K, 2K, FHD, HD). Fast, free, and secure YouTube to MP4 and MP3 converter."
+    />
+    <meta
+      name="keywords"
+      content="youtube downloader, download youtube videos, youtube to mp4, youtube to mp3, video downloader, 4k downloader"
+    />
+    <meta name="author" content="TubeSpire" />
+    <link rel="canonical" href="{{ request.url_root }}" />
+
+    <meta property="og:title" content="TubeSpire - Elite YouTube Downloader" />
+    <meta
+      property="og:description"
+      content="Download YouTube videos and audio in the highest quality available (4K, 2K, FHD, HD)."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="{{ request.url_root }}" />
+    <meta
+      property="og:image"
+      content="{{ url_for('static', filename='og-image.png') }}"
+    />
+    <meta property="og:image:alt" content="TubeSpire Logo" />
+    <meta property="og:site_name" content="TubeSpire" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="TubeSpire - Elite YouTube Downloader" />
+    <meta
+      name="twitter:description"
+      content="Download YouTube videos and audio in the highest quality available (4K, 2K, FHD, HD)."
+    />
+    <meta
+      name="twitter:image"
+      content="{{ url_for('static', filename='og-image.png') }}"
+    />
+
+    <link
+      rel="icon"
+      href="{{ url_for('static', filename='favicon.ico') }}"
+      sizes="any"
+    />
+    <link
+      rel="icon"
+      href="{{ url_for('static', filename='favicon.svg') }}"
+      type="image/svg+xml"
+    />
+    <link
+      rel="apple-touch-icon"
+      href="{{ url_for('static', filename='apple-touch-icon.png') }}"
+    />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Poppins:wght@700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+
+  <body>
+    <div class="page-wrapper">
+      {% include 'navbar.html' %} {% block content %}{% endblock %}
+    </div>
+
+    {% include 'footer.html' %}
+
+    <div id="download-modal" class="download-modal">
+      <div class="modal-content">
+        <div class="loader">
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+        </div>
+        <h3>Processing Your Download</h3>
+        <p>
+          High-quality files may take a moment to prepare. Your download will
+          start automatically.
+        </p>
+      </div>
+    </div>
+
+    <div id="cookie-consent-banner" class="cookie-consent">
+      <p>
+        This website uses cookies to ensure you get the best experience. By
+        using our site, you acknowledge that you have read and understand our
+        <a href="{{ url_for('privacy') }}">Privacy Policy</a>.
+      </p>
+      <button id="cookie-consent-btn" class="cookie-consent-btn">
+        Got it!
+      </button>
+    </div>
+
+    {% block scripts %}{% endblock %}
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const consentBanner = document.getElementById("cookie-consent-banner");
+        const consentBtn = document.getElementById("cookie-consent-btn");
+        if (consentBanner && consentBtn) {
+          if (!localStorage.getItem("cookieConsent")) {
+            consentBanner.style.display = "flex";
+          }
+          consentBtn.addEventListener("click", () => {
+            localStorage.setItem("cookieConsent", "true");
+            consentBanner.style.display = "none";
+          });
+        }
+        const downloadButtons = document.querySelectorAll(
+          ".download-trigger-btn"
+        );
+        const modal = document.getElementById("download-modal");
+        if (downloadButtons.length > 0 && modal) {
+          downloadButtons.forEach((button) => {
+            button.addEventListener("click", function (event) {
+              event.preventDefault();
+              modal.classList.add("visible");
+              const form = this.closest("form");
+              if (form) {
+                setTimeout(() => {
+                  form.submit();
+                }, 150);
+              }
+              setTimeout(() => {
+                modal.classList.remove("visible");
+              }, 8000);
+            });
+          });
+        }
+      });
+    </script>
+  </body>
+</html>
