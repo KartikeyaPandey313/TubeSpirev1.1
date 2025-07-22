@@ -3,25 +3,27 @@ block content %}
 <main class="container legal-page">
   <header class="legal-header">
     <h1>About TubeSpire</h1>
-    <p>Our Mission, Vision, and the Technology Behind the Service</p>
+    <p>Our Philosophy, Our Technology, and Our Commitment to You.</p>
   </header>
 
   <section class="legal-content">
-    <h2>Our Mission</h2>
+    <h2>Our Philosophy</h2>
     <p>
       Our mission is to provide a simple, powerful, and reliable tool for users
-      to save online video content for offline use. Whether you're a content
-      creator or editor needing clips for a edit, a student saving educational
-      lectures, or simply someone who wants to watch videos without an internet
-      connection, our service is built to empower you.
+      to save online video content for offline use. We envision a world where
+      users have complete control over their media. TubeSpire is not just a
+      tool; it's a step towards a more open and accessible internet, built on
+      the power of open-source software and the freedom it provides to users and
+      developers alike.
     </p>
 
     <h2>Our Technology</h2>
     <p>
       TubeSpire is built on a foundation of robust, open-source technology. We
-      utilize the powerful `yt-dlp` Python library, the gold standard for online
+      utilize the powerful `yt-dlp` Python library—the gold standard for online
       video downloading. This allows us to support a wide range of formats and
-      resolutions, including high-definition content up to 8K and beyond.
+      resolutions, including high-definition content up to 8K and beyond,
+      ensuring what you see online is what you get on your device.
     </p>
 
     <h2>Our Commitment to Privacy</h2>
@@ -31,6 +33,46 @@ block content %}
       and are never stored long-term. For more details, please review our
       <a href="{{ url_for('privacy') }}">Privacy Policy</a>.
     </p>
+
+    <h2>The Architect</h2>
+    <div class="creator-profile-card">
+      <div class="creator-avatar">
+        <img
+          src="extras/profile_picture.png"
+          alt="Kartikeya Pandey's Avatar"
+        />
+      </div>
+      <div class="creator-info">
+        <h3>Kartikeya Pandey</h3>
+        <p class="creator-bio">
+          The visionary architect and lead developer of TubeSpire. He forged
+          this application from the ground up, driven by a passion for clean
+          code, hardcore performance, and an uncompromising user experience.
+        </p>
+        <div class="creator-links">
+          <a
+            href="mailto:pandeykartikeya313@gmail.com"
+            aria-label="Email Kartikeya Pandey"
+          >
+            <img
+              src="https://img.shields.io/badge/Email-D14836?style=for-the-badge&logo=gmail&logoColor=white&labelColor=0d1117"
+              alt="Email"
+            />
+          </a>
+          <a
+            href="https://github.com/KartikeyaPandey313"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Kartikeya Pandey's GitHub Profile"
+          >
+            <img
+              src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white&labelColor=0d1117"
+              alt="GitHub"
+            />
+          </a>
+        </div>
+      </div>
+    </div>
   </section>
 </main>
 {% endblock %}
