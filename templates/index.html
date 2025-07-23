@@ -7,8 +7,8 @@ Downloader{% endblock %} {% block content %}
     <h1 class="hero-title">The Ultimate YouTube Downloader</h1>
        
     <p class="hero-subtitle">
-            Download videos and audio in the highest quality available,
-      completely       free. <br />Simple, fast, and reliable.    
+      Download videos and audio in the highest quality available, completely
+      free. <br />Simple, fast, and reliable.    
     </p>
        
     <div class="card url-input-card">
@@ -17,13 +17,8 @@ Downloader{% endblock %} {% block content %}
                
         <div class="input-group">
                     <i class="fas fa-link"></i>          
-          <input
-            type="text"
-            name="url"
-            placeholder="Paste your YouTube link here..."
-            required
-            aria-label="YouTube URL Input"
-          />
+          <input type="text" name="url" placeholder="Paste your YouTube link here..." required
+            aria-label="YouTube URL Input" />
                  
         </div>
                
@@ -51,12 +46,8 @@ Downloader{% endblock %} {% block content %}
        
     <div class="video-preview">
            
-      <img
-        src="{{ video_info.thumbnail }}"
-        alt="Thumbnail for {{ video_info.title }}"
-        class="thumbnail"
-        loading="lazy"
-      />
+      <img src="{{ video_info.thumbnail }}" alt="Thumbnail for {{ video_info.title }}" class="thumbnail"
+        loading="lazy" />
            
       <div class="details">
                
@@ -64,9 +55,7 @@ Downloader{% endblock %} {% block content %}
                
         <p class="meta">
                    
-          <span
-            ><i class="fas fa-user-circle"></i> {{ video_info.uploader }}</span
-          >
+          <span><i class="fas fa-user-circle"></i> {{ video_info.uploader }}</span>
                    
           <span><i class="far fa-clock"></i> {{ formatted_duration }}</span>    
              
@@ -81,42 +70,21 @@ Downloader{% endblock %} {% block content %}
            
       <form id="download-form" method="POST" action="{{ url_for('download') }}">
                        
-        <input
-          type="hidden"
-          name="video_url"
-          value="{{ video_info.webpage_url }}"
-        />
+        <input type="hidden" name="video_url" value="{{ video_info.webpage_url }}" />
                
         <input type="hidden" id="download_type" name="type" value="" />        
-        <input
-          type="hidden"
-          id="download_selection"
-          name="selection"
-          value=""
-        />
+        <input type="hidden" id="download_selection" name="selection" value="" />
 
                
         <div class="tab-buttons" role="tablist">
                    
-          <button
-            type="button"
-            class="tab-btn active"
-            onclick="openTab(event, 'video-downloads')"
-            role="tab"
-            aria-selected="true"
-            aria-controls="video-downloads"
-          >
+          <button type="button" class="tab-btn active" onclick="openTab(event, 'video-downloads')" role="tab"
+            aria-selected="true" aria-controls="video-downloads">
                         <i class="fas fa-video"></i> Video          
           </button>
                    
-          <button
-            type="button"
-            class="tab-btn"
-            onclick="openTab(event, 'audio-downloads')"
-            role="tab"
-            aria-selected="false"
-            aria-controls="audio-downloads"
-          >
+          <button type="button" class="tab-btn" onclick="openTab(event, 'audio-downloads')" role="tab"
+            aria-selected="false" aria-controls="audio-downloads">
                         <i class="fas fa-music"></i> Audio          
           </button>
                  
@@ -125,12 +93,8 @@ Downloader{% endblock %} {% block content %}
                        
         <div id="video-downloads" class="tab-content active" role="tabpanel">
                     {% for format in video_formats %}                    
-          <button
-            type="button"
-            class="format-btn download-trigger-btn"
-            data-type="video"
-            data-selection="{{ format.format_id }}_{{ format.height }}"
-          >
+          <button type="button" class="format-btn download-trigger-btn" data-type="video"
+            data-selection="{{ format.format_id }}_{{ format.height }}">
                        
             <div class="format-label">
                             <i class="fa-solid fa-clapperboard"></i>            
@@ -152,12 +116,8 @@ Downloader{% endblock %} {% block content %}
                        
         <div id="audio-downloads" class="tab-content" role="tabpanel">
                     {% for format in audio_formats %}                    
-          <button
-            type="button"
-            class="format-btn download-trigger-btn"
-            data-type="audio"
-            data-selection="{{ format.bitrate }}"
-          >
+          <button type="button" class="format-btn download-trigger-btn" data-type="audio"
+            data-selection="{{ format.bitrate }}">
                        
             <div class="format-label">
                             <i class="fa-solid fa-headphones"></i>              
