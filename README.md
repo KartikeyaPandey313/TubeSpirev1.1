@@ -9,7 +9,7 @@
    ╚═╝    ╚═════╝ ╚═════╝ ╚══════╝╚══════╝╚═╝     ╚═╝╚═╝  ╚═╝╚══════╝
 </pre>
 
-# TubeSpire
+# TubeSpire v1.1
 
 ### A High-Performance Engine for Seamless YouTube Media Archiving.
 

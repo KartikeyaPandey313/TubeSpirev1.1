@@ -2,7 +2,7 @@
 
 This document provides a beautifully detailed overview of the TubeSpire project structure. Each file and directory is organized with a clear purpose, ensuring the application is clean, maintainable, and scalable for a production-grade environment.
 
-tubespire/
+tubespire v1.1/
 │
 ├── .github/
 │   └── workflows/
